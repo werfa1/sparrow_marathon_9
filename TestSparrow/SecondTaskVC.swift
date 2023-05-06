@@ -40,7 +40,7 @@ final class SecondTaskVC: UIViewController {
             delay: 0,
             options: [.allowUserInteraction, .beginFromCurrentState],
             animations: {
-                sender.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+                sender.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
             },
             completion: { _ in
                 UIView.animate(
@@ -104,7 +104,6 @@ final class SecondTaskVC: UIViewController {
         configuration.title = "Second medium Button"
         secondButton = SparrowButton(configuration: configuration)
         secondButton.tag = 2
-//        secondButton
         secondButton.addTarget(self, action: #selector(handleShowingModalVC), for: .touchUpInside)
         view.addSubview(secondButton)
         secondButton.translatesAutoresizingMaskIntoConstraints = false
@@ -128,7 +127,7 @@ final class SecondTaskVC: UIViewController {
     }
 }
 
-class SparrowButton: UIButton {
+final class SparrowButton: UIButton {
     override func tintColorDidChange() {
         super.tintColorDidChange()
         switch tintAdjustmentMode {
