@@ -17,7 +17,6 @@ final class ThirdTaskVC: UIViewController {
     // MARK: - Fields -
     
     private var propertyAnimator: UIViewPropertyAnimator!
-    private var sliderPropertyAnimator: UIViewPropertyAnimator!
     
     // MARK: - Lifecycle -
     
@@ -29,39 +28,42 @@ final class ThirdTaskVC: UIViewController {
         configureSquareView()
         configureSlider()
         
-        propertyAnimator = UIViewPropertyAnimator(duration: 0.3, curve: .linear, animations: {
+        propertyAnimator = UIViewPropertyAnimator(duration: 1.5, curve: .linear, animations: {
             self.squareView.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi / 2))
                 .scaledBy(x: 1.5, y: 1.5)
             
             self.squareView.center.x = self.view.frame.maxX - self.view.layoutMargins.right - (self.squareView.frame.width / 2)
         })
-        
-        sliderPropertyAnimator = UIViewPropertyAnimator(duration: 0.5, curve: .linear, animations: {
-            self.slider.value = self.slider.maximumValue
-        })
+        propertyAnimator.pausesOnCompletion = true
     }
     
     // MARK: - Objective-C Methods -
     
     @objc
     private func handleSliderValueChanged(_ sender: UISlider, for event: UIEvent) {
+        
         if let touchEvent = event.allTouches?.first {
             switch touchEvent.phase {
-            case .began:
-                let sliderValue = CGFloat(sender.value)
-                animate(forFractureValue: sliderValue)
+            case .moved :
+                propertyAnimator.fractionComplete = CGFloat(sender.value)
+            case .ended :
+                animateSlider(withTimeFactor: sender.value)
+                propertyAnimator.startAnimation()
             default:
-                print()
-//                sliderPropertyAnimator.startAnimation()
-//                animate(forFractureValue: CGFloat(slider.value))
+                return
             }
         }
     }
     
-    // MARK: - Helpers -
+    // MARK: - Animation -
     
-    private func animate(forFractureValue value: CGFloat) {
-        propertyAnimator.fractionComplete = CGFloat(value)
+    private func animateSlider(withTimeFactor factor: Float) {
+        UIView.animate(
+            withDuration: 1.5,
+            delay: 0,
+            options: [.allowUserInteraction, .beginFromCurrentState]) {
+                self.slider.setValue(1, animated: true)
+            }
     }
     
     // MARK: - UI Configuration -
@@ -84,6 +86,11 @@ final class ThirdTaskVC: UIViewController {
         slider.tintColor = .systemPink
         slider.thumbTintColor = .systemPink
         view.addSubview(slider)
+//        slider.frame = CGRect(
+//            x: view.layoutMargins.left,
+//            y: view.layoutMargins.top + 120,
+//            width: view.frame.width - view.layoutMargins.left - view.layoutMargins.right,
+//            height: 30)
         
         slider.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
