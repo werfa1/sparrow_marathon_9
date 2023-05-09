@@ -59,7 +59,7 @@ final class ThirdTaskVC: UIViewController {
     
     private func animateSlider(withTimeFactor factor: Float) {
         UIView.animate(
-            withDuration: 1.5,
+            withDuration: 1.25,
             delay: 0,
             options: [.allowUserInteraction, .beginFromCurrentState]) {
                 self.slider.setValue(1, animated: true)
@@ -86,11 +86,6 @@ final class ThirdTaskVC: UIViewController {
         slider.tintColor = .systemPink
         slider.thumbTintColor = .systemPink
         view.addSubview(slider)
-//        slider.frame = CGRect(
-//            x: view.layoutMargins.left,
-//            y: view.layoutMargins.top + 120,
-//            width: view.frame.width - view.layoutMargins.left - view.layoutMargins.right,
-//            height: 30)
         
         slider.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
