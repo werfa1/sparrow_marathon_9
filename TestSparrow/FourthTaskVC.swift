@@ -11,7 +11,7 @@ final class FourthTaskVC: UIViewController, UITableViewDelegate {
     
     // MARK: - UI Elements -
     
-    private lazy var tableView = UITableView()
+    private lazy var tableView = UITableView(frame: .zero, style: .insetGrouped)
     
     // MARK: - Fields -
     
@@ -41,20 +41,28 @@ final class FourthTaskVC: UIViewController, UITableViewDelegate {
     @objc
     private func handleShuffling() {
         print("shuffle")
+        data.shuffle()
+        applySnapshot()
     }
     
-    // MARK: - Animation -
+    // MARK: - Helpers -
+    
+    private func applySnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Int, Int>()
+        snapshot.appendSections([1])
+        snapshot.appendItems(data)
+        
+        diffableDataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    // MARK: - TableView Delegate -
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let item = data[indexPath.row]
         data.remove(at: indexPath.row)
         data.insert(item, at: 0)
-        var snapshot = NSDiffableDataSourceSnapshot<Int, Int>()
-        snapshot.appendSections([1])
-        snapshot.appendItems(data)
-        
-        diffableDataSource.apply(snapshot, animatingDifferences: true)
+        applySnapshot()
     }
     
     // MARK: - UI Configuration -
