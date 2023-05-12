@@ -16,10 +16,10 @@ final class FourthTaskVC: UIViewController, UITableViewDelegate {
     // MARK: - Fields -
     
     private let cellIdentifier = "cell"
-    private var diffableDataSource: UITableViewDiffableDataSource<Int, Int>!
-    private var snapshot: NSDiffableDataSourceSnapshot<Int, Int>!
+    private var diffableDataSource: UITableViewDiffableDataSource<Sections, Int>!
+    private var snapshot: NSDiffableDataSourceSnapshot<Sections, Int>!
     
-    private var data = Array(0...40)
+    private var data = Array(0...40).map { SparrowData(title: $0, isChecked: false) }
     
     // MARK: - Lifecycle -
     
@@ -40,7 +40,6 @@ final class FourthTaskVC: UIViewController, UITableViewDelegate {
     
     @objc
     private func handleShuffling() {
-        print("shuffle")
         data.shuffle()
         applySnapshot()
     }
@@ -48,10 +47,10 @@ final class FourthTaskVC: UIViewController, UITableViewDelegate {
     // MARK: - Helpers -
     
     private func applySnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Int, Int>()
-        snapshot.appendSections([1])
-        snapshot.appendItems(data)
-        
+        var snapshot = NSDiffableDataSourceSnapshot<Sections, Int>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(data.map { $0.title })
+        snapshot.reconfigureItems(data.map { $0.title })
         diffableDataSource.apply(snapshot, animatingDifferences: true)
     }
     
@@ -59,10 +58,18 @@ final class FourthTaskVC: UIViewController, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let item = data[indexPath.row]
-        data.remove(at: indexPath.row)
-        data.insert(item, at: 0)
-        applySnapshot()
+        if !data[indexPath.row].isChecked {
+            var item = data[indexPath.row]
+            data.remove(at: indexPath.row)
+            item.changeCheckedState()
+            data.insert(item, at: 0)
+            applySnapshot()
+        } else {
+            data[indexPath.row].changeCheckedState()
+            var snapshot = diffableDataSource.snapshot()
+            snapshot.reconfigureItems([data[indexPath.row].title])
+            diffableDataSource.apply(snapshot, animatingDifferences: true)
+        }
     }
     
     // MARK: - UI Configuration -
@@ -73,16 +80,35 @@ final class FourthTaskVC: UIViewController, UITableViewDelegate {
         view.addSubview(tableView)
         tableView.frame = view.bounds
         
-        diffableDataSource = UITableViewDiffableDataSource<Int, Int>(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
+        diffableDataSource = UITableViewDiffableDataSource<Sections, Int>(tableView: tableView, cellProvider: { tableView, indexPath, itemIdentifier in
             let cell = tableView.dequeueReusableCell(withIdentifier: self.cellIdentifier, for: indexPath)
+            guard let data = self.data.first(where: { $0.title == itemIdentifier }) else { return cell }
             cell.textLabel?.text = "\(itemIdentifier)"
+            cell.accessoryType = data.isChecked ? .checkmark : .none
             return cell
         })
         diffableDataSource.defaultRowAnimation = .bottom
-        snapshot = NSDiffableDataSourceSnapshot<Int, Int>()
-        snapshot.appendSections([1])
-        snapshot.appendItems(data)
+        snapshot = NSDiffableDataSourceSnapshot<Sections, Int>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(data.map { $0.title })
         diffableDataSource.apply(snapshot)
+    }
+    
+    // MARK: - Nested Types -
+    
+    struct SparrowData: Hashable, Equatable {
+        let title: Int
+        var isChecked: Bool
+        
+        mutating func changeCheckedState() {
+            isChecked = !isChecked
+        }
+        
+        
+    }
+    
+    enum Sections: Int {
+        case main
     }
 }
 
