@@ -96,15 +96,13 @@ final class FourthTaskVC: UIViewController, UITableViewDelegate {
     
     // MARK: - Nested Types -
     
-    struct SparrowData: Hashable, Equatable {
+    struct SparrowData: Hashable {
         let title: Int
         var isChecked: Bool
         
         mutating func changeCheckedState() {
             isChecked = !isChecked
         }
-        
-        
     }
     
     enum Sections: Int {
