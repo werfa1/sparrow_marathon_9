@@ -62,8 +62,8 @@ final class CompactVC: UIViewController {
         config.image = image
         config.baseForegroundColor = .lightGray
         config.baseBackgroundColor = .clear
-        closeButton = UIButton(configuration: config, primaryAction: UIAction(handler: { _ in
-            self.dismiss(animated: true)
+        closeButton = UIButton(configuration: config, primaryAction: UIAction(handler: { [weak self] _ in
+            self?.dismiss(animated: true)
         }))
         
         closeButton.translatesAutoresizingMaskIntoConstraints = false
