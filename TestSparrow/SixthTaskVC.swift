@@ -14,6 +14,17 @@ final class SixthTaskVC: UIViewController {
     private lazy var squareView = UIView()
         
     // MARK: - Fields -
+    
+    private lazy var dynamicAnimator = UIDynamicAnimator(referenceView: view)
+    
+    private lazy var collisionBehavior: UICollisionBehavior = {
+        let behavior = UICollisionBehavior(items: [squareView])
+        behavior.translatesReferenceBoundsIntoBoundary = true
+        dynamicAnimator.addBehavior(behavior)
+        return behavior
+    }()
+    
+    private var snapBehavior: UISnapBehavior!
         
     // MARK: - Lifecycle -
     
@@ -28,11 +39,7 @@ final class SixthTaskVC: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
             let coordinates = touch.location(in: view)
-            let translationX = coordinates.x - squareView.center.x
-            let translationY = coordinates.y - squareView.center.y
-            UIView.animate(withDuration: 0.3) {
-                self.squareView.transform = .init(translationX: translationX, y: translationY)
-            }
+            snapBehavior.snapPoint = coordinates
         }
     }
     
@@ -43,7 +50,6 @@ final class SixthTaskVC: UIViewController {
     private func configureSquareView() {
         squareView.backgroundColor = .systemPink
         squareView.layer.cornerRadius = 5
-        
         view.addSubview(squareView)
         squareView.frame = CGRect(
             x: view.frame.midX,
@@ -51,6 +57,11 @@ final class SixthTaskVC: UIViewController {
             width: 100,
             height: 100)
         squareView.center = view.center
+        collisionBehavior.addItem(squareView)
+        let snap = UISnapBehavior(item: squareView, snapTo: view.center)
+        snap.damping = 1
+        dynamicAnimator.addBehavior(snap)
+        snapBehavior = snap
     }
 }
 
