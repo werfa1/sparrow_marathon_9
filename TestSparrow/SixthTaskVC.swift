@@ -48,7 +48,7 @@ final class SixthTaskVC: UIViewController {
     // MARK: - UI Configuration -
     
     private func configureSquareView() {
-        squareView.backgroundColor = .systemPink
+        squareView.backgroundColor = .systemBlue
         squareView.layer.cornerRadius = 5
         view.addSubview(squareView)
         squareView.frame = CGRect(
