@@ -24,26 +24,13 @@ final class EighthTaskVC: UIViewController, UIScrollViewDelegate {
         
         title = "Avatar"
         navigationController?.navigationBar.prefersLargeTitles = true
-        
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         configureNavBar()
         configureScrollView()
-    }
-    
-    // MARK: - Scroll Delegate -
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard let navigationController else { return }
-//        if navigationController.navigationBar.frame.height <= (44 + 5) {
-//            imageView.isHidden = true
-//        } else {
-//            imageView.isHidden = false
-//        }
-        print()
     }
         
     // MARK: - UI Configuration -
@@ -52,7 +39,7 @@ final class EighthTaskVC: UIViewController, UIScrollViewDelegate {
         guard let navigationController else { return }
         imageView = UIImageView(image: UIImage(systemName: "person.crop.circle.fill"))
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        navigationController.navigationBar.addSubview(imageView)
+        navigationController.navigationBar.subviews.first(where: { $0.clipsToBounds })!.addSubview(imageView)
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: 36),
             imageView.heightAnchor.constraint(equalToConstant: 36),
